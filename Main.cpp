@@ -1,16 +1,24 @@
-#include <iostream>
 #include <cmath>
+#include <iostream>
 #include <vector>
+#include "General.h"
 
-using namespace std;
+using std::cout;
+using std::cin;
+using std::getline;
+using std::string;
+using std::to_string;
+using std::tolower;
+using std::vector;
 
+// Lambert W or Omega function is the inverse of xe^x
 string lambertW(string arg) {
     cout << "Approximating Lambert W logarithm of " << arg << "...\n"; // Debug
-    if (stod(arg) <= -1 / exp(1)) return "Error: Domain..."; // Due to be updated.
-    double guess = (stod(arg) <= 1) ? -0.25 : log(stod(arg));
-    for (int a = 0; a < 10; a++) guess = guess - (((guess * exp(guess) - stod(arg)) / (guess * exp(guess) + exp(guess))));
-    return to_string(guess);
-} // Inverse of xe^x
+    if (stod(arg) <= -1 / exp(1)) return "Error: Domain..."; // Update once new error system is done.
+    double Guess = (stod(arg) <= 1) ? -0.25 : log(stod(arg));
+    for (int a = 0; a < 10; a++) Guess = Guess - (((Guess * exp(Guess) - stod(arg)) / (Guess * exp(Guess) + exp(Guess))));
+    return to_string(Guess);
+}
 
 string logBase(string base, string arg) {
     cout << "Approximating log base " << base << " of " << arg << "...\n"; // Debug
@@ -43,39 +51,8 @@ string toLowerCase(string arg) {
     return evaluation;
 }
 
-bool isOperator(char arg) {
-    if (arg == '^' || arg == '*' || arg == '/' || arg == '!' || arg == '(' || arg == ')') return true;
-    return false;
-}
-
-class EquationSorter {
-public:
-    vector<string> equation;
-    int skip = 1;
-
-    string mainFunc(string command) {
-        cout << "["; // Debug
-        for (int a = 0; a < command.length(); a++) {
-            if (a == 0 || command.at(a) == '+' || command.at(a) == '-' || isOperator(command.at(a)) ||
-                isOperator(command.at(a - 1))) {
-                equation.push_back({command.at(a)});
-                // Creates a new element in the array and adds command.at(a) to it.
-                cout << ((a == 0) ? "pb" : ", pb"); // Debug
-            } else {
-                equation[a - skip] += command.at(a); // Adds command.at(a) to the element equation[a - skip].
-                skip++;
-                cout << ", s"; // Debug
-            }
-        }
-        cout << "], {"; // Debug
-        for (auto &b: equation) cout << "\"" << b << "\", "; // Debug
-        cout << "}, equation.size() = " << equation.size() << "\n"; // Debug
-        return "";
-    }
-};
-
-string orderOfOperations(int lower_bound, int upper_bound, vector<string> dynamic_arraylist) {
-    int skip = 2;
+// Simplify given an input which doesn't contain a parenthesis
+string simplifyNonParenthetic(int lower_bound, int upper_bound, vector<string> equation) {
 
     /*
      * Notes:
@@ -84,26 +61,21 @@ string orderOfOperations(int lower_bound, int upper_bound, vector<string> dynami
      2) Next, we need to look for exponents.
      3) Next we need to look for multiplication and division.
      4) Finally, we need to look for addition and subtraction.
-     dynamic_arraylist[a] will always be a number, so perhaps start at dynamic_arraylist[a + 1]?
-
-
      */
-
-    for (int a = lower_bound + 1; a < upper_bound; a++) {
-        if (dynamic_arraylist[a] == "^");
-    }
+    cout << "test"; // Debug
     return "";
 }
 
-string evaluationAlgorithm(string command) {
-
-    EquationSorter equationSorter;
-    equationSorter.mainFunc(command);
-
-    for (int a = 0; a < equationSorter.equation.size(); a++) {
-
+// Simplify given an input containing parenthesis.
+string simplifyParenthetic(vector<string> equation) {
+    int OpenParenthesisCounter, ClosedParenthesisCounter;
+    for (int a = 0; a < equation.size(); a++) {
+        if (equation[a] == "(" || equation[a] == ")")
+            (equation[a] == "(") ? OpenParenthesisCounter++ : ClosedParenthesisCounter++;
     }
-    return ("Answer: " + equationSorter.equation[0]);
+    // if (OpenParenthesisCounter != ClosedParenthesisCounter) syntax
+    if (OpenParenthesisCounter == 0) return simplifyNonParenthetic(0, equation.size(), equation);
+    return "";
 }
 
 string lookUpCommand(string command) {
@@ -124,11 +96,7 @@ string lookUpCommand(string command) {
                "|                floor(x), ceil(x), and sign(x) are |\n"
                "|                included in this calculator.       |\n"
                "+---------------------------------------------------+";
-    if (toLowerCase(command) == "run test") {
-        cout << lambertW("777");
-        return "";
-    }
-    return evaluationAlgorithm(command);
+    return simplifyParenthetic(tokenization(command));
 }
 
 void run() {
