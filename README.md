@@ -1,31 +1,53 @@
-# Equation Interpretation Loop
+## Libraries
+- [cmath](https://www.cplusplus.com/reference/cmath/?kw=cmath)
+- [iostream](https://www.cplusplus.com/reference/istream/iostream/?kw=iostream)
+- [vector](https://www.cplusplus.com/reference/vector/vector/?kw=vector)
+## Logic
+My calculator runs in steps:
 
-The mainFunc is responsible for separating the math operators and numbers.
+1. Split the (string) equation into a bunch of tokens, which then get stored in a (string) vector.
+2. Loop through the (string vector) equation.
+3. If the (string vector) equation does not contain parenthesis, simplify non-parenthetically.
+4. If the (string vector) equation does contain parenthesis, run several processes to determine when to apply the `simplifyNonParenthetic()` function.
 
-The loop counter 'a' begins at 0 and adds 1 until 'a' is equal to command.length(),
-this loop will separate numbers and mathematical operators.
+The method I have chosen for this calculator is one that I formulated myself through some experimentation. I am positive this is not the first time an approach like this has been implemented into a calculator, so by no means dub me the original source of it.
+## Tokenization
+> `vector<string> tokenization(string input) {}`
 
-If 'a' == 0, create a new element in the dynamic array. 'pb'
-If 'command.at(a)' is an operator, create a new element in the dynamic array. 'pb'
-If 'command.at(a - 1)' is an operator, create a new element in the dynamic array. 'pb'
-If 'a' is not an operator, and 'command.at(a - 1)' is not an operator, add character to current element. 's'
+The `tokenization()` function is responsible for splitting the (string) input into tokens. The `tokenization()` function returns a (string) vector containing the equation.
 
-Example: Suppose somebody enters the equation '8 * 4'.
+For the next part, it is important to know two things
 
-# Debug
+1. `a` is an iterator looping over the (string) input.
+2. An operator is anything except for a positive or negative number (+x, -x).
 
+- If `a == 0` -> create a new element in (vector string) equation.
+- If `command[a]` is an operator -> create a new element in (vector string) equation.
+- If `command[a - 1]` is an operator -> create a new element in (vector string) equation.
+- If `command[a]` is not an operator and `command[a - 1]` is not an operator -> add `input[a]` `to equation[a - skip]`.
+## Non-Parenthetic Simplification
+> `string simplifyNonParenthetic(int lower_bound, int upper_bound, vector<string> equation) {}`
+
+The `simplifyNonParenthetic()` function is responsible for simplifying pieces of the (string vector) equation from lower_bound to upper_bound that do not contain parenthesis.
+## Parenthetic Simplification
+> `string simplifyParenthetic(vector<string> equation) {}`
+
+Parenthetic Simplification is the default process ran if the `commandLookUp()` function is unable to classify the (string) input as a command, but rather as an equation.
+
+If the (string vector) equation does not contain any parenthesis, then the `simplifyParenthetic()` function will return `simplifyNonParenthetic(0, equation.size(), equation)`.
+
+If the (string vector) equation does contain parenthesis, many processes will be ran to determine when to apply the `simplifyNonParenthetic()` function...
+
+`I am not finished with the logic of this process.`
+## Debug
 When a user enters an equation, some useful debug information will be sent.
 
-Example: Suppose somebody enters the equation '4 * 8'.
-The debug information that will be sent will look like this: [pb, pb, pb] -> {"4", "*", "8"}, equation.size() = 3.
+> Example: Suppose a user inputs the equation `4 * 8`.
+>
+> During the `tokenization()` process, some useful debug information will be send that looks like this:
+>
+> `[pb, pb, pb] -> {"4", "*", "8"}, equation.size() = 3`.
 
-This information gives us all the steps taken to sort the equation, each element in the array, and the equation size.
-[pb, pb, pb] -> {"4", "*", "8"}, equation.size() = 3. ('pb' is short for pushback and 's' is short for skip).
-
-# "E.M.D.A.S." Function (Exponent, Multiplication, Division, Addition, Subtraction)
-
-This function is in charge of calculating simple expressions.
-Simple expressions are expressions which fit the following criteria:
-
-1. For all exponential equations (e.g. "2^5-8", "2/sqrt(11+3)", "4^(2-3)+1"), the
-exponent and the base of the exponent should be written as a single value.
+- The steps taken to sort the equation are sent (`[pb, pb, pb]`)
+- The (string vector) equation containing the equation is sent (`{"4", "*", "8"})
+- And, `equation.size()` is sent.
