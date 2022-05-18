@@ -5,4 +5,4 @@ project(CPP)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(CPP Main.cpp Tokenization.cpp General.h)
+add_executable(CPP Main.cpp Operations.cpp HeaderFiles/operators.h ParseTree.cpp HeaderFiles/parsetree.h)
